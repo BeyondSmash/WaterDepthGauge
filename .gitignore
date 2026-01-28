@@ -1,0 +1,30 @@
+# Gradle
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.classpath
+.project
+bin/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Java
+*.class
+*.jar
+!gradle-wrapper.jar
+*.log
+*.tmp
+
+# Hytale specific
+*.jar
+!gradle-wrapper.jar

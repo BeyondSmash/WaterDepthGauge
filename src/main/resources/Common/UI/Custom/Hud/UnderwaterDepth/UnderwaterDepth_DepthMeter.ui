@@ -1,0 +1,136 @@
+@GaugeTexture = PatchStyle(TexturePath: "gauge_6ticks.png");
+
+Group #MultipleHUD {
+  LayoutMode: Full;
+
+  // Dummy groups for other HUD mods - must be Groups to accept children
+  // Made large enough to accommodate their content without clipping
+  Group #BlockInfo {
+    Anchor: (Left: 0, Top: 0, Width: 300, Height: 100);
+  }
+  Group #AdvancedItemInfo {
+    Anchor: (Left: 0, Top: 0, Width: 400, Height: 300);
+  }
+  Group #AdminUI {
+    Anchor: (Left: 0, Top: 0, Width: 300, Height: 200);
+  }
+
+  Group #EyeSpyHUD {
+    Anchor: (Left: 0, Top: 0, Width: 600, Height: 500);
+  }
+  Group #UnderwaterDepth {
+    Anchor: (Top: 475, Left: 20, Width: 240, Height: 240);
+
+    Label #SeaLevelText {
+      Anchor: (Left: 0, Top: 0);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+    Label #SeaLevelValue {
+      Anchor: (Left: 117, Top: -3);
+      Style: (FontSize: 14, RenderBold: true, TextColor: #ffffff);
+    }
+
+    Label #LocalDepthLabel {
+      Anchor: (Left: 0, Top: 28);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+      Text: "Local Water Depth:";
+    }
+
+    Label #DirectionIcon {
+      Anchor: (Left: 105, Top: 26);
+      Style: (FontSize: 14, RenderBold: true, TextColor: #ffff00);
+      Text: "";
+    }
+
+    Group #GaugeContainer {
+      Background: @GaugeTexture;
+      Anchor: (Top: 57, Left: 0, Width: 59, Height: 205);
+    }
+
+    Label #Tick3m {
+      Anchor: (Left: 47, Top: 79);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+    Label #Tick6m {
+      Anchor: (Left: 47, Top: 107);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+    Label #Tick9m {
+      Anchor: (Left: 47, Top: 135);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+    Label #Tick12m {
+      Anchor: (Left: 47, Top: 163);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+    Label #Tick15m {
+      Anchor: (Left: 47, Top: 191);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+    Label #Tick18m {
+      Anchor: (Left: 47, Top: 219);
+      Style: (FontSize: 11, RenderBold: false, TextColor: #ffffff);
+    }
+
+      Label #Marker0 { Anchor: (Left: 80, Top: 40); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker1 { Anchor: (Left: 80, Top: 43); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker2 { Anchor: (Left: 80, Top: 46); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker3 { Anchor: (Left: 80, Top: 50); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker4 { Anchor: (Left: 80, Top: 53); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker5 { Anchor: (Left: 80, Top: 56); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker6 { Anchor: (Left: 80, Top: 59); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker7 { Anchor: (Left: 80, Top: 63); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker8 { Anchor: (Left: 80, Top: 66); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker9 { Anchor: (Left: 80, Top: 69); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker10 { Anchor: (Left: 80, Top: 72); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker11 { Anchor: (Left: 80, Top: 75); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker12 { Anchor: (Left: 80, Top: 79); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker13 { Anchor: (Left: 80, Top: 82); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker14 { Anchor: (Left: 80, Top: 85); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker15 { Anchor: (Left: 80, Top: 88); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker16 { Anchor: (Left: 80, Top: 92); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker17 { Anchor: (Left: 80, Top: 95); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker18 { Anchor: (Left: 80, Top: 98); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker19 { Anchor: (Left: 80, Top: 101); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker20 { Anchor: (Left: 80, Top: 104); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker21 { Anchor: (Left: 80, Top: 108); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker22 { Anchor: (Left: 80, Top: 111); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker23 { Anchor: (Left: 80, Top: 114); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker24 { Anchor: (Left: 80, Top: 117); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker25 { Anchor: (Left: 80, Top: 121); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker26 { Anchor: (Left: 80, Top: 124); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker27 { Anchor: (Left: 80, Top: 127); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker28 { Anchor: (Left: 80, Top: 130); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker29 { Anchor: (Left: 80, Top: 133); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker30 { Anchor: (Left: 80, Top: 137); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker31 { Anchor: (Left: 80, Top: 140); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker32 { Anchor: (Left: 80, Top: 143); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker33 { Anchor: (Left: 80, Top: 146); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker34 { Anchor: (Left: 80, Top: 149); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker35 { Anchor: (Left: 80, Top: 153); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker36 { Anchor: (Left: 80, Top: 156); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker37 { Anchor: (Left: 80, Top: 159); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker38 { Anchor: (Left: 80, Top: 162); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker39 { Anchor: (Left: 80, Top: 166); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker40 { Anchor: (Left: 80, Top: 169); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker41 { Anchor: (Left: 80, Top: 172); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker42 { Anchor: (Left: 80, Top: 175); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker43 { Anchor: (Left: 80, Top: 178); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker44 { Anchor: (Left: 80, Top: 182); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker45 { Anchor: (Left: 80, Top: 185); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker46 { Anchor: (Left: 80, Top: 188); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker47 { Anchor: (Left: 80, Top: 191); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker48 { Anchor: (Left: 80, Top: 195); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker49 { Anchor: (Left: 80, Top: 198); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker50 { Anchor: (Left: 80, Top: 201); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker51 { Anchor: (Left: 80, Top: 204); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker52 { Anchor: (Left: 80, Top: 207); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker53 { Anchor: (Left: 80, Top: 211); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker54 { Anchor: (Left: 80, Top: 214); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker55 { Anchor: (Left: 80, Top: 217); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker56 { Anchor: (Left: 80, Top: 220); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker57 { Anchor: (Left: 80, Top: 224); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker58 { Anchor: (Left: 80, Top: 227); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+    Label #Marker59 { Anchor: (Left: 80, Top: 230); Style: (FontSize: 22, RenderBold: true, TextColor: #ffffff); }
+  }
+}
