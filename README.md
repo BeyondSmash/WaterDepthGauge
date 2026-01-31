@@ -4,13 +4,13 @@ A Hytale plugin that displays a real-time depth gauge when underwater, showing b
 
 ## Features
 
-✓ **Real-time depth tracking** - Shows depth in meters below the water surface
-✓ **Sea level reference** - Optional display of depth relative to Y=115 (sea level)
-✓ **Direction indicators** - Up/down arrows show if you're ascending or descending
-✓ **Dynamic gauge** - Automatically adjusts range as you dive deeper (0-20m, 20-40m, etc.)
-✓ **Smooth animations** - Gauge updates in real-time with 500ms refresh rate
-✓ **Configurable display** - Toggle between whole numbers and decimal precision
-✓ **Cross-mod compatible** - Works with ALL MultipleHUD-compatible mods (Blocchio, BlockInfo, EyeSpyHUD, etc.)
+- **Real-time depth tracking** - Shows depth in meters below the water surface
+- **Sea level reference** - Optional display of depth relative to Y=115 (sea level)
+- **Direction indicators** - Up/down arrows show if you're ascending or descending
+- **Dynamic gauge** - Automatically adjusts range as you dive deeper (0-20m, 20-40m, etc.)
+- **Smooth animations** - Gauge updates in real-time with 500ms refresh rate
+- **Configurable display** - Toggle between whole numbers and decimal precision
+- **Cross-mod compatible** - Works with ALL MultipleHUD-compatible mods (Blocchio, BlockInfo, EyeSpyHUD, etc.)
 
 ## Requirements
 
