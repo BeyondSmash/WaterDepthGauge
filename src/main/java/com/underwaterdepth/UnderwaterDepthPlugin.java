@@ -48,12 +48,6 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
     // MultipleHUD integration flag
     private boolean isMultipleHUDAvailable = false;
 
-    // Compatible mods configuration
-    private CompatibleModsConfig compatibleModsConfig;
-
-    // Path to external config directory (Mods/WaterDepthGauge/)
-    private Path externalConfigDir;
-
     // Track HUDs for each player
     private final Map<UUID, DepthHud> activeHuds = new HashMap<>();
 
@@ -82,19 +76,6 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
         return instance;
     }
 
-    /**
-     * Get the compatible mods configuration
-     */
-    public CompatibleModsConfig getCompatibleModsConfig() {
-        return compatibleModsConfig;
-    }
-
-    /**
-     * Get the path to external UI file (for user editing)
-     */
-    public Path getExternalUiPath() {
-        return externalConfigDir.resolve("UnderwaterDepth_DepthMeter.ui");
-    }
 
     /**
      * Get the active HUD for a player
@@ -128,54 +109,6 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
 
         try {
             // Get path to GLOBAL Mods/WaterDepthGauge/ folder (more accessible than world-specific Data folder)
-            // getDataDirectory() returns world-specific relative path like: Saves/WorldName/mods/BeyondSmash_WaterDepthGauge
-            // We want GLOBAL: %AppData%\Roaming\Hytale\UserData\Mods\WaterDepthGauge\
-
-            Path dataDir = getDataDirectory();
-            getLogger().at(Level.INFO).log("Data directory (relative): " + dataDir);
-
-            // Make path absolute to get the full filesystem path
-            Path absoluteDataDir = dataDir.toAbsolutePath();
-            getLogger().at(Level.INFO).log("Data directory (absolute): " + absoluteDataDir);
-
-            // Navigate up to UserData directory by finding "UserData" in the path
-            Path currentPath = absoluteDataDir;
-            Path userDataDir = null;
-
-            // Go up looking for UserData directory
-            while (currentPath != null) {
-                if (currentPath.getFileName() != null &&
-                    currentPath.getFileName().toString().equals("UserData")) {
-                    userDataDir = currentPath;
-                    break;
-                }
-                currentPath = currentPath.getParent();
-            }
-
-            if (userDataDir == null) {
-                getLogger().at(Level.SEVERE).log("Could not find UserData directory in path: " + absoluteDataDir);
-                getLogger().at(Level.SEVERE).log("Falling back to world-specific directory");
-                externalConfigDir = dataDir;
-            } else {
-                // Use GLOBAL Mods folder, not world-specific
-                externalConfigDir = userDataDir.resolve("Mods").resolve("WaterDepthGauge");
-                getLogger().at(Level.INFO).log("Using GLOBAL config directory (shared across all worlds)");
-            }
-
-            getLogger().at(Level.INFO).log("External config directory: " + externalConfigDir);
-
-            // Ensure config directory exists
-            java.nio.file.Files.createDirectories(externalConfigDir);
-
-            // Load compatible mods configuration
-            compatibleModsConfig = CompatibleModsConfig.load(
-                externalConfigDir.resolve("compatible_mods.json")
-            );
-            getLogger().at(Level.INFO).log("Loaded " + compatibleModsConfig.compatibleHudMods.size() + " compatible HUD mods");
-
-            // Extract default UI file if it doesn't exist (allows user editing)
-            extractDefaultUiFile();
-
             // Register commands
             getCommandRegistry().registerCommand(new TestDepthCommand());
             getCommandRegistry().registerCommand(new WDepthCommand());
@@ -373,24 +306,17 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
                 DepthHud hud = new DepthHud(playerRefComp, initialDepth, initialSeaLevelDepth);
 
                 // Show the HUD using MultipleHUD API for proper cross-mod compatibility
+                // MultipleHUD handles showing internally, so we don't call hud.show() ourselves
                 getLogger().at(Level.INFO).log("[SHOW HUD] Registering HUD with MultipleHUD");
-                MultipleHUD.getInstance().setCustomHud(player, playerRefComp, "UnderwaterDepth", hud);
-                hud.show();
+                MultipleHUD.getInstance().setCustomHud(player, playerRefComp, DepthHud.ID, hud);
 
-                // CRITICAL: Only add to activeHuds AFTER successful show
-                // This prevents "can't rejoin" issue if show() throws exception
+                // CRITICAL: Only add to activeHuds AFTER successful registration
+                // This prevents "can't rejoin" issue if setCustomHud() throws exception
                 activeHuds.put(uuid, hud);
 
                 getLogger().at(Level.INFO).log("[SHOW HUD] HUD shown successfully and added to active HUDs");
             } catch (Exception e) {
                 getLogger().at(Level.SEVERE).log("[SHOW HUD] FAILED to show HUD for player " + uuid + ": " + e.getMessage(), e);
-
-                // Check if this is a missing MultipleHUD mod error
-                String errorMsg = e.getMessage();
-                if (errorMsg != null && errorMsg.contains("#MultipleHUD #")) {
-                    handleMissingModError(errorMsg);
-                }
-
                 getLogger().at(Level.SEVERE).log("[SHOW HUD] Player will not see depth meter but won't be kicked. Error details:");
                 e.printStackTrace();
                 // Don't add to activeHuds if show failed - prevents crash loop on rejoin
@@ -399,15 +325,14 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
     }
 
     /**
-     * Hide the depth HUD for a player using HudManager
-     * Uses EmptyHUD workaround since setCustomHud(null) causes crashes
+     * Hide the depth HUD for a player using MultipleHUD API
      */
     private void hideDepthHud(Player player, UUID uuid) {
         try {
             DepthHud hud = activeHuds.remove(uuid);
 
             if (hud != null) {
-                getLogger().at(Level.INFO).log("[HIDE HUD] Player " + uuid + " - Replacing with EmptyHUD");
+                getLogger().at(Level.INFO).log("[HIDE HUD] Player " + uuid + " - Hiding via MultipleHUD API");
 
                 // Get player reference component
                 Ref<EntityStore> playerRef = player.getReference();
@@ -420,9 +345,9 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
                         );
 
                         if (playerRefComp != null) {
-                            // Use EmptyHUD to clear the display (workaround for setCustomHud(null) crash)
-                            player.getHudManager().setCustomHud(playerRefComp, new EmptyHUD(playerRefComp));
-                            getLogger().at(Level.INFO).log("[HIDE HUD] HUD cleared via EmptyHUD");
+                            // Use MultipleHUD API to hide HUD
+                            MultipleHUD.getInstance().hideCustomHud(player, playerRefComp, DepthHud.ID);
+                            getLogger().at(Level.INFO).log("[HIDE HUD] HUD hidden via MultipleHUD");
                         }
                     }
                 }
@@ -632,141 +557,6 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
      * Extract default UI file from JAR to external config directory
      * This allows users to edit the UI file without rebuilding the plugin
      */
-    private void extractDefaultUiFile() {
-        Path externalUiFile = getExternalUiPath();
-
-        try {
-            if (java.nio.file.Files.exists(externalUiFile)) {
-                getLogger().at(Level.INFO).log("External UI file already exists: " + externalUiFile);
-                return;
-            }
-
-            getLogger().at(Level.INFO).log("Extracting default UI file to: " + externalUiFile);
-
-            // Read embedded UI file from JAR resources
-            java.io.InputStream embeddedStream = getClass().getClassLoader()
-                .getResourceAsStream("Common/UI/Custom/Hud/UnderwaterDepth/UnderwaterDepth_DepthMeter.ui");
-
-            if (embeddedStream == null) {
-                getLogger().at(Level.WARNING).log("Could not find embedded UI file in JAR resources");
-                return;
-            }
-
-            // Copy to external file
-            java.nio.file.Files.copy(embeddedStream, externalUiFile);
-            embeddedStream.close();
-
-            getLogger().at(Level.INFO).log("Successfully extracted UI file");
-            getLogger().at(Level.INFO).log("Users can now edit: " + externalUiFile);
-
-        } catch (Exception e) {
-            getLogger().at(Level.WARNING).log("Failed to extract default UI file: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Handle missing MultipleHUD mod error by auto-adding to config
-     * Option C: Auto-add with helpful instructions (Option B) as fallback
-     */
-    private void handleMissingModError(String errorMsg) {
-        try {
-            // Parse mod ID from error message
-            // Example: "Selected element in CustomUI command was not found. Selector: #MultipleHUD #EyeSpyHUD"
-            // The mod ID is everything after "#MultipleHUD #" until end of line or newline
-            String modId = null;
-            String selectorPrefix = "Selector: #MultipleHUD #";
-            int selectorIndex = errorMsg.indexOf(selectorPrefix);
-            if (selectorIndex != -1) {
-                int start = selectorIndex + selectorPrefix.length();
-                // Find end: stop at newline, carriage return, or end of string
-                // This ensures we capture the full mod ID even if it has spaces (though unlikely)
-                int end = errorMsg.length();
-                for (int i = start; i < errorMsg.length(); i++) {
-                    char c = errorMsg.charAt(i);
-                    if (c == '\n' || c == '\r' || c == ' ') {
-                        end = i;
-                        break;
-                    }
-                }
-                modId = errorMsg.substring(start, end).trim();
-
-                // Log what we extracted for debugging
-                getLogger().at(Level.INFO).log("[AUTO-DETECT] Extracted mod ID: '" + modId + "' from error message");
-            }
-
-            if (modId == null || modId.isEmpty()) {
-                getLogger().at(Level.WARNING).log("[AUTO-FIX] Could not parse mod ID from error message");
-                return;
-            }
-
-            // Check if already in config
-            if (compatibleModsConfig.hasModId(modId)) {
-                getLogger().at(Level.WARNING).log("[AUTO-FIX] Mod '" + modId + "' is already in config but still causing errors");
-                getLogger().at(Level.WARNING).log("[AUTO-FIX] You may need to increase the container size in compatible_mods.json");
-                return;
-            }
-
-            // Auto-add using universal default dimensions from _DEFAULT config entry
-            compatibleModsConfig.addMod(modId);  // Uses _DEFAULT dimensions
-
-            // Get the dimensions that were used
-            CompatibleModsConfig.CompatibleMod addedMod = compatibleModsConfig.getMod(modId);
-            int width = addedMod != null ? addedMod.width : 600;
-            int height = addedMod != null ? addedMod.height : 500;
-
-            // Save to external config directory
-            compatibleModsConfig.save(externalConfigDir.resolve("compatible_mods.json"));
-
-            // Log detection and instructions
-            getLogger().at(Level.WARNING).log("========================================");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] Incompatible HUD mod detected!");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] Mod ID: " + modId);
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] Auto-added to config:");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Added '" + modId + "' to compatible_mods.json");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Using default container size: " + width + "x" + height);
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - (Adjust _DEFAULT entry in config to change defaults for future mods)");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] FIX INSTRUCTIONS (REBUILD REQUIRED):");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] OPTION 1: Request Developer Update (Recommended for most users)");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Report this mod ID to BeyondSmash on GitHub");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Wait for updated plugin release");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] OPTION 2: Auto-Rebuild (Advanced users - FASTEST!)");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   1. Download plugin source from GitHub");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   2. Run: UPDATE.bat");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]      (Script automatically adds the Group above and rebuilds)");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   3. Restart server - Done!");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] OPTION 3: Manual Rebuild (Advanced users)");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   1. Download plugin source from GitHub");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   2. Edit: src/main/resources/Common/UI/Custom/Hud/UnderwaterDepth/UnderwaterDepth_DepthMeter.ui");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   3. Add this inside the #MultipleHUD Group:");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]      Group #" + modId + " {");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]        Anchor: (Left: 0, Top: 0, Width: " + width + ", Height: " + height + ");");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]      }");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   4. Run: gradlew.bat shadowJar");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   5. Copy build/libs/WaterDepthGauge-1.0.0.jar to Mods folder");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   6. Restart server");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] TO CUSTOMIZE DIMENSIONS:");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Edit Width/Height in compatible_mods.json");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Or modify the _DEFAULT entry to change defaults for all future auto-detected mods");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY]   - Changes require rebuild of plugin");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] ");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] NOTE: This limitation exists because appendInline() crashes with variable declarations.");
-            getLogger().at(Level.WARNING).log("[COMPATIBILITY] See HYUI-CONVERSION-ATTEMPT.md for technical details.");
-            getLogger().at(Level.WARNING).log("========================================");
-
-        } catch (Exception e) {
-            getLogger().at(Level.SEVERE).log("[AUTO-FIX] Error handling missing mod: " + e.getMessage(), e);
-        }
-    }
-
     /**
      * Cleanup when plugin shuts down
      * CRITICAL: Clear all player state to prevent stuck HUD errors

@@ -1,7 +1,7 @@
 {
   "Group": "BeyondSmash",
   "Name": "WaterDepthGauge",
-  "Version": "1.0.2",
+  "Version": "1.0.3",
   "Description": "Displays a depth meter when underwater - shows depth in meters below the water surface",
   "Authors": [
     {

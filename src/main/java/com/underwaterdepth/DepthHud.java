@@ -10,16 +10,15 @@ import javax.annotation.Nonnull;
 
 /**
  * Custom HUD that displays underwater depth in meters with gauge image
- * Uses static dummy Groups in .ui file for MultipleHUD compatibility
- *
- * Note: Config system tracks compatible mods but does not generate UI dynamically
- * due to architectural limitations (CustomUIHud + HyUI incompatibility)
+ * Integrates with MultipleHUD library via standard registration API
  *
  * @author BeyondSmash
  */
 public class DepthHud extends CustomUIHud {
 
     private static final Logger LOGGER = Logger.getLogger("UnderwaterDepth");
+    public static final String ID = "WaterDepthGauge";
+
     private float currentDepth = 0f;
     private float currentSeaLevelDepth = 0f;
 
@@ -38,18 +37,12 @@ public class DepthHud extends CustomUIHud {
         LOGGER.info("[DepthHud] Initial depth: " + currentDepth + "m, sea level: " + currentSeaLevelDepth + "m");
 
         try {
-            // Get compatible mods configuration (for tracking/documentation only)
-            CompatibleModsConfig config = UnderwaterDepthPlugin.getInstance().getCompatibleModsConfig();
-            LOGGER.info("[DepthHud] Config tracks " + config.compatibleHudMods.size() + " compatible mods");
-
             // Load embedded UI file from JAR resources
-            // NOTE: appendInline() causes client crash even when variables are split from structure
-            // This is a Hytale engine limitation - must use embedded UI files
             String uiPath = "Hud/UnderwaterDepth/UnderwaterDepth_DepthMeter.ui";
-            LOGGER.info("[DepthHud] Loading embedded UI file: " + uiPath);
+            LOGGER.info("[DepthHud] Loading UI file: " + uiPath);
             builder.append(uiPath);
 
-            // Set initial state
+            // Set initial gauge state
             LOGGER.info("[DepthHud] Setting initial gauge state");
             updateGauge(builder, currentDepth, currentSeaLevelDepth, 0, true);
 

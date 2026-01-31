@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.underwaterdepth"
-version = "1.0.2"
+version = "1.0.3"
 
 repositories {
     mavenCentral()
@@ -13,7 +13,7 @@ repositories {
 
 dependencies {
     compileOnly(files("libs/HytaleServer.jar"))
-    compileOnly(files("libs/MultipleHUD-1.0.3.jar"))
+    compileOnly(files("libs/MultipleHUD-1.0.4.jar"))
 }
 
 java {
@@ -30,7 +30,7 @@ tasks {
     shadowJar {
         archiveBaseName.set("WaterDepthGauge")
         archiveClassifier.set("")
-        archiveVersion.set("1.0.2")
+        archiveVersion.set("1.0.3")
     }
 
     build {
