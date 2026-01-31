@@ -1,10 +1,10 @@
 # Changelog
 
-## v1.0.3 (2026-01-31)
+## v1.0.3
 
 **Major Refactor: Proper MultipleHUD Integration**
 
-### Breaking Changes
+### Changes
 - **Removed entire compatibility system** (500+ lines of code)
   - No more `compatible_mods.json` auto-detection
   - No more `UPDATE.bat` workflow
@@ -20,55 +20,8 @@
   - Works with ALL MultipleHUD-compatible mods (Blocchio, BlockInfo, EyeSpyHUD, etc.)
   - No special configuration needed - just install and play
 
-### Technical Changes
-- UI Group renamed: `#UnderwaterDepth` → `#WaterDepthGauge` (matches normalized mod ID)
-- Removed manual `hud.show()` call after MultipleHUD registration (was causing double-show bug)
-- Mod ID format: `"WaterDepthGauge"` (no special characters to avoid normalization issues)
-- Added `$Common = "Common.ui";` import to UI file (MultipleHUD pattern)
-
 ### Deleted Files
 - `src/main/java/com/underwaterdepth/CompatibleModsConfig.java` (obsolete)
 - `src/main/java/com/underwaterdepth/EmptyHUD.java` (obsolete)
 - `UPDATE.bat` (no longer needed)
 - `auto-update.ps1` (no longer needed)
-
-### Migration from v1.0.2
-- **No action required** - Just update the JAR and restart
-- Plugin data location remains unchanged: `%AppData%\Roaming\Hytale\UserData\Saves\[WORLD_NAME]\mods\BeyondSmash_WaterDepthGauge\`
-
----
-
-## v1.0.2 (2026-01-28)
-
-**Major Update: Automated MultipleHUD Compatibility System**
-
-### What's New
-- **Auto-Detection System**: Plugin now automatically detects incompatible MultipleHUD mods from disconnect errors
-- **UPDATE.bat Workflow**: One-click fix for compatibility issues - no manual .ui editing required
-- **Pre-configured Mods**: Now includes support for BlockInfo, AdvancedItemInfo, AdminUI, and EyeSpyHUD out of the box
-
-### Technical Improvements
-- Improved mod ID parsing with better edge case handling (newlines, spaces, special characters)
-- Added `[AUTO-DETECT]` debug logging for troubleshooting
-- Version-agnostic JAR detection in build scripts
-- Auto-saves detected mod IDs to `compatible_mods.json`
-
-### Bug Fixes
-- Fixed incomplete state cleanup in shutdown() causing "can't rejoin" issues
-  - v1.0.0: Only cleared activeHuds + previousUnderwaterState (2/5 Maps)
-  - v1.0.2: Now clears all player state (waterEntryY, previousDepth, knownWorlds)
-
-### User Experience
-- **Before (v1.0.0)**: Get disconnect error → manually edit .ui file → rebuild plugin → redeploy
-- **After (v1.0.2)**: Get disconnect error → exit to menu → run UPDATE.bat → restart server
-
----
-
-## v1.0.0 (Initial Release)
-
-### Core Features
-- Real-time underwater depth tracking (local + sea level)
-- Direction indicators (rising/descending)
-- Automatic HUD show/hide at 0.5m threshold
-- User commands: `/wdepth on`, `/wdepth off`, `/wdepth status`
-- Basic MultipleHUD integration
