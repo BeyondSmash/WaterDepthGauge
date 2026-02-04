@@ -1,3 +1,7 @@
+[![Discord](https://img.shields.io/discord/1466767155893633158?label=Join-Discord&logo=discord&logoColor=E1B154&labelColor=23272a&color=E1B154&style=for-the-badge)](https://discord.gg/h3zWEH3rzk)
+
+---
+
 # WaterDepthGauge
 
 A Hytale plugin that displays a real-time depth gauge when underwater, showing both local water depth and depth relative to sea level.
@@ -10,6 +14,7 @@ A Hytale plugin that displays a real-time depth gauge when underwater, showing b
 - **Dynamic gauge** - Automatically adjusts range as you dive deeper (0-20m, 20-40m, etc.)
 - **Smooth animations** - Gauge updates in real-time with 500ms refresh rate
 - **Configurable display** - Toggle between whole numbers and decimal precision
+- **Per-player settings** - Each player has independent preferences that persist across sessions
 - **Cross-mod compatible** - Works with ALL MultipleHUD-compatible mods (Blocchio, BlockInfo, EyeSpyHUD, etc.)
 
 ## Requirements
@@ -20,7 +25,7 @@ A Hytale plugin that displays a real-time depth gauge when underwater, showing b
 
 ## Installation
 
-1. Download the latest release: [WaterDepthGauge-1.0.3.jar](https://github.com/BeyondSmash/WaterDepthGauge/releases/latest)
+1. Download the latest release: [WaterDepthGauge-1.0.4.jar](https://github.com/BeyondSmash/WaterDepthGauge/releases/latest)
 2. Place the JAR in: `%AppData%\Roaming\Hytale\UserData\Mods\`
 3. Ensure MultipleHUD is also installed
 4. Start your server and join the game
@@ -31,22 +36,26 @@ The depth gauge automatically appears when you submerge underwater (≥0.5m dept
 
 ### Commands
 
-- `/wdepth status` - Check if the gauge is enabled
-- `/wdepth on` - Enable the depth gauge
-- `/wdepth off` - Disable the depth gauge
+All settings are saved per-player (each player has their own preferences).
 
-### Configuration
+- `/wdepth` - Show your current settings
+- `/wdepth help` - Show command list and usage
+- `/wdepth on` - Enable depth gauge (default)
+- `/wdepth off` - Disable depth gauge
+- `/wdepth sea <on|off>` - Toggle sea level display
+- `/wdepth decimal <on|off>` - Toggle decimal precision (e.g., 5.3m vs 5m)
+- `/wdepth credits` - Show plugin credits
 
-Player-specific settings are stored in:
-`%AppData%\Roaming\Hytale\UserData\Saves\[WORLD_NAME]\mods\BeyondSmash_WaterDepthGauge\config.json`
+### Settings Storage
 
-**Available settings:**
-```json
-{
-  "decimalEnabled": true,          // Show decimal precision (e.g., "5.3m" vs "5m")
-  "seaLevelDisplayEnabled": true   // Show "Units below sea level: 5m" text
-}
+Your personal settings are saved per-player to disk. Each player has independent preferences that persist across sessions.
+
+Settings file location:
 ```
+C:\Users\[USERNAME]\AppData\Roaming\Hytale\UserData\Saves\[WORLD_NAME]\mods\BeyondSmash_WaterDepthGauge\player_settings.json
+```
+
+**To access:** Press Win+R, then paste: `%AppData%\Hytale\UserData\Saves\[WORLD_NAME]\mods\BeyondSmash_WaterDepthGauge`
 
 ## How It Works
 
@@ -56,14 +65,14 @@ Player-specific settings are stored in:
 - **Color Coding**: Markers turn pale orange at 5m intervals (5m, 10m, 15m, etc.)
 - **Direction Arrow**: Yellow arrow shows ascending (^) or descending (v) movement
 
-## v1.0.3 Update - Proper MultipleHUD Integration
+## v1.0.4 Update - Per-Player Settings Persistence
 
-This version completely refactored the plugin to use proper MultipleHUD API integration:
+This version adds per-player settings that persist to disk:
 
-- **Removed 500+ lines of legacy compatibility code**
-- **No more manual configuration needed** - Just install and play
-- **Works with ALL MultipleHUD-compatible mods** - Tested with Blocchio, BlockInfo, EyeSpyHUD
-- **Fixed cross-mod conflicts** - No longer uses "dominant UI system" that overrode MultipleHUD's container
+- **Settings survive server restarts** - No more reconfiguring every time you join
+- **Per-player preferences** - Each player has independent settings
+- **New commands** - `/wdepth help` for command reference, `/wdepth sea <on|off>`, `/wdepth decimal <on|off>`
+- **Complete documentation** - All commands now properly documented
 
 See [CHANGELOG.md](CHANGELOG.md) for full details.
 
@@ -75,7 +84,7 @@ cd WaterDepthGauge
 ./gradlew shadowJar
 ```
 
-Output: `build/libs/WaterDepthGauge-1.0.3.jar`
+Output: `build/libs/WaterDepthGauge-1.0.4.jar`
 
 ## Support
 
