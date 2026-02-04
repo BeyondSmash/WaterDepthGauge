@@ -10,6 +10,8 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Main command for underwater depth HUD configuration
  * Usage:
+ *   /wdepth - Show current settings
+ *   /wdepth help - Show command list
  *   /wdepth on - Enable HUD
  *   /wdepth off - Disable HUD
  *   /wdepth sea on - Show sea level display
@@ -22,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 public class WDepthCommand extends AbstractCommand {
 
     public WDepthCommand() {
-        super("wdepth", "Configure underwater depth HUD (usage: /wdepth <on | off | sea | decimal | credits> [value])");
+        super("wdepth", "Configure underwater depth HUD (usage: /wdepth <on | off | sea | decimal | help | credits> [value])");
         setPermissionGroup(GameMode.Adventure);
         setAllowsExtraArguments(true);
     }
@@ -78,13 +80,19 @@ public class WDepthCommand extends AbstractCommand {
                 String subcommand = args[0].toLowerCase();
 
                 switch (subcommand) {
+                    case "help":
+                        showHelp(context);
+                        break;
+
                     case "on":
                         config.setEnabled(true);
+                        UnderwaterDepthPlugin.getInstance().savePlayerSettings();
                         context.sendMessage(Message.raw("Underwater depth HUD enabled").color("#55ff55"));
                         break;
 
                     case "off":
                         config.setEnabled(false);
+                        UnderwaterDepthPlugin.getInstance().savePlayerSettings();
                         context.sendMessage(Message.raw("Underwater depth HUD disabled").color("#ff5555"));
                         break;
 
@@ -100,9 +108,11 @@ public class WDepthCommand extends AbstractCommand {
                         }
                         if (args[1].equalsIgnoreCase("on")) {
                             config.setSeaLevelDisplayEnabled(true);
+                            UnderwaterDepthPlugin.getInstance().savePlayerSettings();
                             context.sendMessage(Message.raw("Sea level display enabled").color("#55ff55"));
                         } else if (args[1].equalsIgnoreCase("off")) {
                             config.setSeaLevelDisplayEnabled(false);
+                            UnderwaterDepthPlugin.getInstance().savePlayerSettings();
                             context.sendMessage(Message.raw("Sea level display disabled").color("#ff5555"));
                         } else {
                             context.sendMessage(Message.raw("Usage: /wdepth sea <on | off>").color("#ff5555"));
@@ -117,9 +127,11 @@ public class WDepthCommand extends AbstractCommand {
                         }
                         if (args[1].equalsIgnoreCase("on")) {
                             config.setDecimalEnabled(true);
+                            UnderwaterDepthPlugin.getInstance().savePlayerSettings();
                             context.sendMessage(Message.raw("Decimal display enabled (e.g., 3.1m)").color("#55ff55"));
                         } else if (args[1].equalsIgnoreCase("off")) {
                             config.setDecimalEnabled(false);
+                            UnderwaterDepthPlugin.getInstance().savePlayerSettings();
                             context.sendMessage(Message.raw("Decimal display disabled (whole numbers only)").color("#ff5555"));
                         } else {
                             context.sendMessage(Message.raw("Usage: /wdepth decimal <on | off>").color("#ff5555"));
@@ -128,7 +140,7 @@ public class WDepthCommand extends AbstractCommand {
 
                     default:
                         context.sendMessage(Message.raw("Unknown subcommand: " + subcommand).color("#ff5555"));
-                        context.sendMessage(Message.raw("Usage: /wdepth <on | off | sea | decimal | credits> [value]").color("#aaaaaa"));
+                        context.sendMessage(Message.raw("Use '/wdepth help' for command list").color("#aaaaaa"));
                         break;
                 }
 
@@ -179,8 +191,27 @@ public class WDepthCommand extends AbstractCommand {
         context.sendMessage(
             Message.raw("Commands: ")
                 .color("#aaaaaa")
-                .insert(Message.raw("/wdepth <on | off | sea | decimal | credits>")
+                .insert(Message.raw("/wdepth <on | off | sea | decimal | help | credits>")
                     .color("#ffffff"))
         );
+    }
+
+    /**
+     * Show custom help message with command list and usage
+     */
+    private void showHelp(CommandContext context) {
+        context.sendMessage(Message.raw("=== Water Depth Gauge - Commands ===").color("#ffaa00").bold(true));
+        context.sendMessage(Message.raw(""));
+        context.sendMessage(Message.raw("/wdepth").color("#ffffff").insert(Message.raw(" - Show your current settings").color("#aaaaaa")));
+        context.sendMessage(Message.raw("/wdepth help").color("#ffffff").insert(Message.raw(" - Show this help message").color("#aaaaaa")));
+        context.sendMessage(Message.raw("/wdepth on").color("#ffffff").insert(Message.raw(" - Enable depth gauge").color("#aaaaaa")));
+        context.sendMessage(Message.raw("/wdepth off").color("#ffffff").insert(Message.raw(" - Disable depth gauge").color("#aaaaaa")));
+        context.sendMessage(Message.raw("/wdepth sea <on|off>").color("#ffffff").insert(Message.raw(" - Toggle sea level display").color("#aaaaaa")));
+        context.sendMessage(Message.raw("/wdepth decimal <on|off>").color("#ffffff").insert(Message.raw(" - Toggle decimal precision").color("#aaaaaa")));
+        context.sendMessage(Message.raw("/wdepth credits").color("#ffffff").insert(Message.raw(" - Show plugin credits").color("#aaaaaa")));
+        context.sendMessage(Message.raw(""));
+        context.sendMessage(Message.raw("Examples:").color("#ffaa00"));
+        context.sendMessage(Message.raw("  /wdepth sea off").color("#888888").insert(Message.raw(" - Hide sea level depth").color("#666666")));
+        context.sendMessage(Message.raw("  /wdepth decimal on").color("#888888").insert(Message.raw(" - Show decimals (5.3m)").color("#666666")));
     }
 }

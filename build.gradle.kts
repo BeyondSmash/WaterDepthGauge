@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.underwaterdepth"
-version = "1.0.3"
+version = "1.0.4"
 
 repositories {
     mavenCentral()
@@ -30,7 +30,7 @@ tasks {
     shadowJar {
         archiveBaseName.set("WaterDepthGauge")
         archiveClassifier.set("")
-        archiveVersion.set("1.0.3")
+        archiveVersion.set("1.0.4")
     }
 
     build {

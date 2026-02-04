@@ -1,5 +1,34 @@
 # Changelog
 
+## v1.0.4 (2026-02-04)
+
+**Per-Player Settings Persistence**
+
+### What's New
+- Settings now persist to disk per-player
+  - Each player's preferences saved to `player_settings.json`
+  - Settings survive server restarts and player disconnects
+  - No more reconfiguring every time you join
+
+### Changed
+- Command documentation now complete in CurseForge README
+  - Added `/wdepth help` - Show command list and usage
+  - Added `/wdepth sea <on|off>` - Toggle sea level display
+  - Added `/wdepth decimal <on|off>` - Toggle decimal precision
+  - Added `/wdepth credits` - Show plugin credits
+  - Updated `/wdepth` (no args) - Now shows your current settings
+
+### Technical
+- Added `PlayerConfig.loadConfigs()` and `PlayerConfig.getAllConfigs()` for serialization
+- Settings auto-save after each command change
+- File location: `C:\Users\[USERNAME]\AppData\Roaming\Hytale\UserData\Saves\[WORLD_NAME]\mods\BeyondSmash_WaterDepthGauge\player_settings.json`
+
+### Migration from v1.0.3
+- Update the JAR and restart - existing settings will use defaults
+- Configure your preferences with commands - they'll persist from now on
+
+---
+
 ## v1.0.3 (2026-01-31)
 
 **Major Refactor: Proper MultipleHUD Integration**

@@ -13,6 +13,11 @@ import com.hypixel.hytale.server.core.event.events.player.PlayerDisconnectEvent;
 import com.hypixel.hytale.component.Ref;
 import com.hypixel.hytale.component.Store;
 import com.buuz135.mhud.MultipleHUD;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.*;
@@ -28,7 +33,13 @@ import java.util.logging.Level;
 public class UnderwaterDepthPlugin extends JavaPlugin {
 
     private static final String PLUGIN_NAME = "UnderwaterDepth";
-    private static final String VERSION = "1.0.0";
+    private static final String VERSION = "1.0.4";
+
+    // Configuration file name
+    private static final String PLAYER_SETTINGS_FILE = "player_settings.json";
+
+    // Gson for JSON serialization
+    private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
     // Hytale World Constants (based on community data)
     private static final int WORLD_BOTTOM = 0;      // Y=0 (bedrock layer around Y=3)
@@ -108,7 +119,9 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
         getLogger().at(Level.INFO).log("Setting up " + PLUGIN_NAME + "...");
 
         try {
-            // Get path to GLOBAL Mods/WaterDepthGauge/ folder (more accessible than world-specific Data folder)
+            // Load player settings from disk
+            loadPlayerSettings();
+
             // Register commands
             getCommandRegistry().registerCommand(new TestDepthCommand());
             getCommandRegistry().registerCommand(new WDepthCommand());
@@ -587,5 +600,47 @@ public class UnderwaterDepthPlugin extends JavaPlugin {
         knownWorlds.clear();
 
         getLogger().at(Level.INFO).log(PLUGIN_NAME + " shutdown complete - all player state cleared");
+    }
+
+    /**
+     * Load player settings from disk
+     */
+    private void loadPlayerSettings() {
+        Path settingsPath = getDataDirectory().resolve(PLAYER_SETTINGS_FILE);
+
+        try {
+            if (Files.exists(settingsPath)) {
+                String json = Files.readString(settingsPath);
+                Map<String, PlayerConfig> configMap = gson.fromJson(json, new TypeToken<Map<String, PlayerConfig>>(){}.getType());
+                if (configMap != null) {
+                    PlayerConfig.loadConfigs(configMap);
+                    getLogger().at(Level.INFO).log("Loaded player settings from %s (%d players)", settingsPath, configMap.size());
+                }
+            } else {
+                getLogger().at(Level.INFO).log("No existing player settings found - using defaults");
+            }
+        } catch (IOException e) {
+            getLogger().at(Level.WARNING).log("Failed to load player settings: %s", e.getMessage());
+        }
+    }
+
+    /**
+     * Save player settings to disk
+     */
+    public void savePlayerSettings() {
+        Path settingsPath = getDataDirectory().resolve(PLAYER_SETTINGS_FILE);
+
+        try {
+            // Ensure data directory exists
+            Files.createDirectories(getDataDirectory());
+
+            // Write player settings to JSON
+            Map<String, PlayerConfig> configMap = PlayerConfig.getAllConfigs();
+            String json = gson.toJson(configMap);
+            Files.writeString(settingsPath, json);
+            getLogger().at(Level.INFO).log("Saved player settings to %s (%d players)", settingsPath, configMap.size());
+        } catch (IOException e) {
+            getLogger().at(Level.WARNING).log("Failed to save player settings: %s", e.getMessage());
+        }
     }
 }

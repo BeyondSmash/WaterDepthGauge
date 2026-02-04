@@ -1,5 +1,7 @@
 package com.underwaterdepth;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,7 +19,8 @@ public class PlayerConfig {
     private int opacity = 100; // 0-100%
     private boolean decimalEnabled = true;
 
-    private PlayerConfig() {
+    public PlayerConfig() {
+        // Public constructor for Gson deserialization
     }
 
     /**
@@ -32,6 +35,32 @@ public class PlayerConfig {
      */
     public static void removeConfig(UUID uuid) {
         configs.remove(uuid);
+    }
+
+    /**
+     * Load all player configs from a map (used for deserialization)
+     */
+    public static void loadConfigs(Map<String, PlayerConfig> configMap) {
+        configs.clear();
+        for (Map.Entry<String, PlayerConfig> entry : configMap.entrySet()) {
+            try {
+                UUID uuid = UUID.fromString(entry.getKey());
+                configs.put(uuid, entry.getValue());
+            } catch (IllegalArgumentException e) {
+                // Skip invalid UUIDs
+            }
+        }
+    }
+
+    /**
+     * Get all player configs as a map (used for serialization)
+     */
+    public static Map<String, PlayerConfig> getAllConfigs() {
+        Map<String, PlayerConfig> configMap = new HashMap<>();
+        for (Map.Entry<UUID, PlayerConfig> entry : configs.entrySet()) {
+            configMap.put(entry.getKey().toString(), entry.getValue());
+        }
+        return configMap;
     }
 
     // Getters and Setters
